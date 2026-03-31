@@ -80,23 +80,24 @@ def add():
     conn.close()
     return jsonify({"msg": "Student Added ✅"})
 
-# ---------- QR (FINAL FIX) ----------
+# ---------- QR (FINAL REAL FIX) ----------
 @app.route("/qr")
 def qr():
     try:
         expiry = datetime.now() + timedelta(seconds=60)
         value = str(expiry.timestamp())
 
-        folder = os.path.join(os.path.dirname(__file__), "static")
-        os.makedirs(folder, exist_ok=True)
+        import io, base64
 
-        path = os.path.join(folder, "qr.png")
-
+        buffer = io.BytesIO()
         img = qrcode.make(value)
-        img.save(path)
+        img.save(buffer, format="PNG")
+        buffer.seek(0)
+
+        img_str = base64.b64encode(buffer.read()).decode()
 
         return jsonify({
-            "img": "/static/qr.png",
+            "img": "data:image/png;base64," + img_str,
             "exp": expiry.timestamp(),
             "val": value
         })
