@@ -25,7 +25,7 @@ init_db()
 ADMIN_USER = "admin"
 ADMIN_PASS = "admin123"
 
-# ---------- FRONTEND ROUTES (FINAL FIX) ----------
+# ---------- FRONTEND ROUTES ----------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(BASE_DIR, '..', 'frontend')
 
@@ -79,19 +79,31 @@ def add():
     conn.close()
     return jsonify({"msg": "Student Added ✅"})
 
-# ---------- QR ----------
+# ---------- QR (FIXED) ----------
 @app.route("/qr")
 def qr():
     expiry = datetime.now() + timedelta(seconds=60)
     value = str(expiry.timestamp())
 
-    if not os.path.exists("static"):
-        os.makedirs("static")
+    folder = os.path.join(os.path.dirname(__file__), "static")
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    path = os.path.join(folder, "qr.png")
 
     img = qrcode.make(value)
-    img.save("static/qr.png")
+    img.save(path)
 
-    return jsonify({"img": "/static/qr.png", "exp": expiry.timestamp(), "val": value})
+    return jsonify({
+        "img": "/static/qr.png",
+        "exp": expiry.timestamp(),
+        "val": value
+    })
+
+# ---------- STATIC FILE SERVE (ADDED ONLY THIS) ----------
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), filename)
 
 # ---------- MARK ----------
 @app.route("/mark", methods=["POST"])
