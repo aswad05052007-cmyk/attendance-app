@@ -25,18 +25,21 @@ init_db()
 ADMIN_USER = "admin"
 ADMIN_PASS = "admin123"
 
-# ---------- FRONTEND ROUTES (ADDED FIX) ----------
+# ---------- FRONTEND ROUTES (FINAL FIX) ----------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, '..', 'frontend')
+
 @app.route('/')
 def home():
-    return send_from_directory('../frontend', 'index.html')
+    return send_from_directory(FRONTEND_DIR, 'index.html')
 
 @app.route('/admin')
 def admin_page():
-    return send_from_directory('../frontend', 'admin.html')
+    return send_from_directory(FRONTEND_DIR, 'admin.html')
 
 @app.route('/student')
 def student_page():
-    return send_from_directory('../frontend', 'student.html')
+    return send_from_directory(FRONTEND_DIR, 'student.html')
 
 # ---------- LOGIN ----------
 @app.route("/login", methods=["POST"])
