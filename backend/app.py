@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 import sqlite3
 import qrcode
@@ -24,6 +24,19 @@ init_db()
 
 ADMIN_USER = "admin"
 ADMIN_PASS = "admin123"
+
+# ---------- FRONTEND ROUTES (ADDED FIX) ----------
+@app.route('/')
+def home():
+    return send_from_directory('../frontend', 'index.html')
+
+@app.route('/admin')
+def admin_page():
+    return send_from_directory('../frontend', 'admin.html')
+
+@app.route('/student')
+def student_page():
+    return send_from_directory('../frontend', 'student.html')
 
 # ---------- LOGIN ----------
 @app.route("/login", methods=["POST"])
@@ -151,5 +164,4 @@ def export():
 
 # ---------- RUN ----------
 if __name__ == "__main__":
-   
     app.run(host="0.0.0.0", port=5000)
