@@ -83,26 +83,34 @@ def add():
 # ---------- QR (FINAL REAL FIX) ----------
 @app.route("/qr")
 def qr():
-    try:
-        expiry = datetime.now() + timedelta(seconds=60)
-        value = str(expiry.timestamp())
+    from datetime import datetime, timedelta
+    import base64, io
+    import qrcode
 
-        import io, base64
+    expiry = datetime.now() + timedelta(seconds=60)
+    value = str(expiry.timestamp())
 
-        buffer = io.BytesIO()
-        img = qrcode.make(value)
-        img.save(buffer, format="PNG")
-        buffer.seek(0)
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=10,
+        border=5
+    )
+    qr.add_data(value)
+    qr.make(fit=True)
 
-        img_str = base64.b64encode(buffer.read()).decode()
+    img = qr.make_image(fill_color="black", back_color="white")
 
-        return jsonify({
-            "img": "data:image/png;base64," + img_str,
-            "exp": expiry.timestamp(),
-            "val": value
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)})
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    img_base64 = base64.b64encode(buffer.read()).decode()
+
+    return jsonify({
+        "img": "data:image/png;base64," + img_base64,
+        "exp": expiry.timestamp(),
+        "val": value
+    })
 
 # ---------- STATIC FILE SERVE ----------
 @app.route('/static/<path:filename>')
