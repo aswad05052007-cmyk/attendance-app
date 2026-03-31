@@ -6,7 +6,8 @@ import os
 from datetime import datetime, timedelta
 import pandas as pd
 
-app = Flask(__name__)
+# ✅ FIX: static folder attach
+app = Flask(__name__, static_folder="static")
 CORS(app)
 
 # ---------- DB ----------
@@ -79,28 +80,30 @@ def add():
     conn.close()
     return jsonify({"msg": "Student Added ✅"})
 
-# ---------- QR (FIXED) ----------
+# ---------- QR (FINAL FIX) ----------
 @app.route("/qr")
 def qr():
-    expiry = datetime.now() + timedelta(seconds=60)
-    value = str(expiry.timestamp())
+    try:
+        expiry = datetime.now() + timedelta(seconds=60)
+        value = str(expiry.timestamp())
 
-    folder = os.path.join(os.path.dirname(__file__), "static")
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+        folder = os.path.join(os.path.dirname(__file__), "static")
+        os.makedirs(folder, exist_ok=True)
 
-    path = os.path.join(folder, "qr.png")
+        path = os.path.join(folder, "qr.png")
 
-    img = qrcode.make(value)
-    img.save(path)
+        img = qrcode.make(value)
+        img.save(path)
 
-    return jsonify({
-        "img": "/static/qr.png",
-        "exp": expiry.timestamp(),
-        "val": value
-    })
+        return jsonify({
+            "img": "/static/qr.png",
+            "exp": expiry.timestamp(),
+            "val": value
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
-# ---------- STATIC FILE SERVE (ADDED ONLY THIS) ----------
+# ---------- STATIC FILE SERVE ----------
 @app.route('/static/<path:filename>')
 def static_files(filename):
     return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), filename)
