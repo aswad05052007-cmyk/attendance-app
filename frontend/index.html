@@ -28,7 +28,7 @@ Login
 
 <script>
 function login(){
- fetch("http://127.0.0.1:5000/login",{
+ fetch("/login",{   // ✅ FIX 1 (localhost removed)
   method:"POST",
   headers:{"Content-Type":"application/json"},
   body:JSON.stringify({
@@ -38,10 +38,10 @@ function login(){
  })
  .then(r=>r.json())
  .then(d=>{
-   if(d.role=="admin") location="admin.html";
+   if(d.role=="admin") location="/admin";   // ✅ FIX 2
    else if(d.role=="student"){
      localStorage.setItem("id",d.id);
-     location="student.html";
+     location="/student";   // ✅ FIX 2
    } else alert("Invalid login");
  })
 }
