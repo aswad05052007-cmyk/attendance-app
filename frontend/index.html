@@ -28,7 +28,7 @@ Login
 
 <script>
 function login(){
- fetch("/login",{   // ✅ FIX 1 (localhost removed)
+ fetch(window.location.origin + "/login",{
   method:"POST",
   headers:{"Content-Type":"application/json"},
   body:JSON.stringify({
@@ -36,13 +36,20 @@ function login(){
     password:document.getElementById("p").value
   })
  })
- .then(r=>r.json())
+ .then(r=>{
+   if(!r.ok) throw new Error("Server error");
+   return r.json();
+ })
  .then(d=>{
-   if(d.role=="admin") location="/admin";   // ✅ FIX 2
+   if(d.role=="admin") window.location.href="/admin";
    else if(d.role=="student"){
      localStorage.setItem("id",d.id);
-     location="/student";   // ✅ FIX 2
+     window.location.href="/student";
    } else alert("Invalid login");
+ })
+ .catch(err=>{
+   alert("Server not responding ❌");
+   console.log(err);
  })
 }
 </script>
