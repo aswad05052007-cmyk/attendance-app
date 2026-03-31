@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="margin:0;background:linear-gradient(135deg,#0f172a,#1e293b,#020617);font-family:sans-serif;color:white;display:flex;justify-content:center">
+
+<div style="max-width:420px;width:100%;padding:20px">
+
+<h2 style="text-align:center;margin-bottom:10px">🏫 SHANTINIKETAN POLYTECHNIC</h2>
+
+<!-- Cards -->
+<div style="display:flex;gap:10px;margin-bottom:15px">
+<div style="flex:1;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);padding:12px;border-radius:12px;text-align:center">
+Total<br><b id="t"></b>
+</div>
+
+<div style="flex:1;background:rgba(34,197,94,0.15);padding:12px;border-radius:12px;text-align:center">
+Present<br><b id="p"></b>
+</div>
+
+<div style="flex:1;background:rgba(239,68,68,0.15);padding:12px;border-radius:12px;text-align:center">
+Absent<br><b id="a"></b>
+</div>
+</div>
+
+<!-- QR Button -->
+<button onclick="gen()" style="width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(90deg,#3b82f6,#22c55e);color:white;font-weight:bold">
+Generate QR
+</button>
+
+<h3 id="timer" style="text-align:center;margin-top:10px"></h3>
+
+<img id="qr" width="200" style="display:block;margin:auto;margin-top:10px;border-radius:12px">
+
+<!-- Add Student Card -->
+<div style="margin-top:20px;background:rgba(255,255,255,0.05);padding:15px;border-radius:15px">
+
+<h3>Add Student</h3>
+
+<input id="sid" placeholder="ID" style="width:100%;padding:10px;margin-top:5px;border:none;border-radius:10px">
+<input id="sname" placeholder="Name" style="width:100%;padding:10px;margin-top:5px;border:none;border-radius:10px">
+<input id="spass" placeholder="Password" style="width:100%;padding:10px;margin-top:5px;border:none;border-radius:10px">
+
+<button onclick="add()" style="margin-top:10px;width:100%;padding:10px;border:none;border-radius:10px;background:#22c55e;color:white">
+Add Student
+</button>
+
+</div>
+
+<!-- Excel -->
+<a href="http://127.0.0.1:5000/export" 
+style="display:block;text-align:center;margin-top:15px;color:#60a5fa;font-weight:bold">
+⬇ Download Excel
+</a>
+
+</div>
+
+<script>
+let qrVal="";
+
+function gen(){
+ fetch("http://127.0.0.1:5000/qr")
+ .then(r=>r.json())
+ .then(d=>{
+  qr.src="http://127.0.0.1:5000"+d.img+"?t="+Date.now();
+  qrVal=d.val;
+  start(d.exp);
+ })
+}
+
+function start(exp){
+ let i=setInterval(()=>{
+  let t=Math.floor(exp-Date.now()/1000);
+  timer.innerText="QR expires in "+t+" sec";
+  if(t<=0){
+    clearInterval(i);
+    timer.innerText="QR Expired ❌";
+  }
+ },1000);
+}
+
+function add(){
+ fetch("http://127.0.0.1:5000/add",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+    id:sid.value,
+    name:sname.value,
+    pass:spass.value
+  })
+ })
+ .then(r=>r.json())
+ .then(d=>alert(d.msg));
+}
+
+function load(){
+ fetch("http://127.0.0.1:5000/stats")
+ .then(r=>r.json())
+ .then(d=>{
+  t.innerText=d.total;
+  p.innerText=d.present;
+  a.innerText=d.absent;
+ })
+}
+
+setInterval(load,3000);
+load();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body style="margin:0;background:linear-gradient(135deg,#0f172a,#020617);font-family:sans-serif;color:white;display:flex;justify-content:center">
+
+<div style="max-width:400px;width:100%;padding:20px;text-align:center">
+
+<h2>📷 Scan QR</h2>
+
+<div id="reader" style="margin-top:10px;border-radius:12px;overflow:hidden"></div>
+
+<h3 id="msg" style="margin-top:10px"></h3>
+
+<audio id="beep" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
+<h3>📅 Attendance History</h3>
+<ul id="list" style="list-style:none;padding:0"></ul>
+
+<button onclick="location.href='index.html'" 
+style="width:100%;padding:12px;margin-top:15px;border:none;border-radius:12px;background:#ef4444;color:white">
+Logout
+</button>
+
+</div>
+
+<script>
+function onScanSuccess(txt){
+ fetch("http://127.0.0.1:5000/mark",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+    id:localStorage.getItem("id"),
+    qr:txt
+  })
+ })
+ .then(r=>r.json())
+ .then(d=>{
+   msg.innerText=d.msg;
+   document.getElementById("beep").play();
+   loadHistory();
+ });
+
+ scanner.clear();
+}
+
+let scanner=new Html5QrcodeScanner("reader",{fps:10,qrbox:250});
+scanner.render(onScanSuccess);
+
+function loadHistory(){
+ fetch("http://127.0.0.1:5000/history/"+localStorage.getItem("id"))
+ .then(r=>r.json())
+ .then(d=>{
+   let html="";
+   d.forEach(x=>{
+     html+="<li style='background:rgba(255,255,255,0.05);margin:5px;padding:8px;border-radius:8px'>"+x[1]+"</li>";
+   });
+   document.getElementById("list").innerHTML=html;
+ })
+}
+
+loadHistory();
+</script>
+
+</body>
+</html>

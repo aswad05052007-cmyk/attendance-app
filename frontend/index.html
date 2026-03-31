@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="margin:0;background:linear-gradient(135deg,#020617,#0f172a,#1e293b);font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh">
+
+<div style="width:100%;max-width:360px;background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);padding:25px;border-radius:18px;text-align:center;color:white;box-shadow:0 0 20px rgba(0,0,0,0.4)">
+
+<h2 style="margin-bottom:5px">🏫 SHANTINIKETAN POLYTECHNIC</h2>
+<p style="opacity:0.7;margin-bottom:15px">Smart Attendance System</p>
+
+<input id="u" placeholder="User ID"
+style="width:100%;padding:12px;border:none;border-radius:12px;margin-top:10px;background:#1e293b;color:white">
+
+<input id="p" type="password" placeholder="Password"
+style="width:100%;padding:12px;border:none;border-radius:12px;margin-top:10px;background:#1e293b;color:white">
+
+<button onclick="login()" 
+style="margin-top:15px;width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(90deg,#3b82f6,#22c55e);color:white;font-weight:bold;font-size:15px">
+Login
+</button>
+
+<p style="margin-top:10px;font-size:12px;opacity:0.6">Secure QR Attendance System</p>
+
+</div>
+
+<script>
+function login(){
+ fetch("http://127.0.0.1:5000/login",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+    user:document.getElementById("u").value,
+    password:document.getElementById("p").value
+  })
+ })
+ .then(r=>r.json())
+ .then(d=>{
+   if(d.role=="admin") location="admin.html";
+   else if(d.role=="student"){
+     localStorage.setItem("id",d.id);
+     location="student.html";
+   } else alert("Invalid login");
+ })
+}
+</script>
+
+</body>
+</html>
