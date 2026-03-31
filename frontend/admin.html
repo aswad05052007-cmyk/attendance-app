@@ -64,10 +64,18 @@ function gen(){
  fetch(window.location.origin + "/qr")
  .then(r=>r.json())
  .then(d=>{
-  qr.src=window.location.origin + d.img + "?t=" + Date.now();
-  qrVal=d.val;
+  if(d.error){
+    alert("QR Error ❌");
+    return;
+  }
+
+  qr.src = d.img;   // ✅ FINAL FIX (IMPORTANT)
+  qrVal = d.val;
   start(d.exp);
  })
+ .catch(()=>{
+   alert("Server error ❌");
+ });
 }
 
 function start(exp){
