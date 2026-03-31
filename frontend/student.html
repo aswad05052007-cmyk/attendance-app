@@ -20,7 +20,7 @@
 <h3>📅 Attendance History</h3>
 <ul id="list" style="list-style:none;padding:0"></ul>
 
-<button onclick="location.href='index.html'" 
+<button onclick="location.href='/'" 
 style="width:100%;padding:12px;margin-top:15px;border:none;border-radius:12px;background:#ef4444;color:white">
 Logout
 </button>
@@ -29,7 +29,7 @@ Logout
 
 <script>
 function onScanSuccess(txt){
- fetch("http://127.0.0.1:5000/mark",{
+ fetch(window.location.origin + "/mark",{
   method:"POST",
   headers:{"Content-Type":"application/json"},
   body:JSON.stringify({
@@ -51,7 +51,7 @@ let scanner=new Html5QrcodeScanner("reader",{fps:10,qrbox:250});
 scanner.render(onScanSuccess);
 
 function loadHistory(){
- fetch("http://127.0.0.1:5000/history/"+localStorage.getItem("id"))
+ fetch(window.location.origin + "/history/"+localStorage.getItem("id"))
  .then(r=>r.json())
  .then(d=>{
    let html="";

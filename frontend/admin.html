@@ -50,7 +50,7 @@ Add Student
 </div>
 
 <!-- Excel -->
-<a href="http://127.0.0.1:5000/export" 
+<a href="/export" 
 style="display:block;text-align:center;margin-top:15px;color:#60a5fa;font-weight:bold">
 ⬇ Download Excel
 </a>
@@ -61,10 +61,10 @@ style="display:block;text-align:center;margin-top:15px;color:#60a5fa;font-weight
 let qrVal="";
 
 function gen(){
- fetch("http://127.0.0.1:5000/qr")
+ fetch(window.location.origin + "/qr")
  .then(r=>r.json())
  .then(d=>{
-  qr.src="http://127.0.0.1:5000"+d.img+"?t="+Date.now();
+  qr.src=window.location.origin + d.img + "?t=" + Date.now();
   qrVal=d.val;
   start(d.exp);
  })
@@ -82,7 +82,7 @@ function start(exp){
 }
 
 function add(){
- fetch("http://127.0.0.1:5000/add",{
+ fetch(window.location.origin + "/add",{
   method:"POST",
   headers:{"Content-Type":"application/json"},
   body:JSON.stringify({
@@ -96,7 +96,7 @@ function add(){
 }
 
 function load(){
- fetch("http://127.0.0.1:5000/stats")
+ fetch(window.location.origin + "/stats")
  .then(r=>r.json())
  .then(d=>{
   t.innerText=d.total;
