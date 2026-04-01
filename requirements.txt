@@ -1,6 +1,7 @@
 flask
 flask-cors
 qrcode
+pillow
 pandas
 openpyxl
 gunicorn
