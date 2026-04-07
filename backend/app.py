@@ -87,7 +87,7 @@ def qr():
     import base64, io
     import qrcode
 
-    expiry = datetime.now() + timedelta(seconds=60)
+    expiry = datetime.now() + timedelta(seconds=30)
     value = str(expiry.timestamp())
 
     qr = qrcode.QRCode(
